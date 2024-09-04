@@ -1,73 +1,120 @@
+<template>
+  <div class="typing-area container-muted">
+    <div class="breadcrumbs">
+      <p>{{ problem.breadcrumbs }}</p>
+    </div>
+    <div class="pseudo-text-area">
+      <div class="number-rule">
+        <p v-for="(line, index) in displayText">
+          {{ index + 1 }}
+        </p>
+      </div>
+      <div class="display-text">
+        <div v-for="(line, row) in displayText" :key="row">
+          <span
+            v-for="(char, column) in line"
+            :key="column"
+            :class="getCharacterClass(row, column)"
+          >
+            <span v-if="char === '\t'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span v-else>{{ char }}</span>
+          </span>
+        </div>
+      </div>
+
+      <textarea
+        class="hidden"
+        v-model="currentTypings"
+        ref="play-field"
+        @input="processInput"
+      ></textarea>
+    </div>
+  </div>
+</template>
+
 <script>
 export default {
+  name: 'TypingArea',
   props: {
-    text: {
-      type: String,
-      required: true
-    }
+    problem: { problem: Object, required: true }
   },
   data() {
     return {
       INPUT_CHARACTERS:
         'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|;\':",./<>? ',
-      current_typings: '',
-      processed_typings: '',
-      reference_text: '',
-      display_text: ''
+      currentTypings: '',
+      processedInput: '',
+      referenceText: '',
+      displayText: '',
+      startTime: 0,
+      gameStarted: false
     }
   },
   methods: {
     setupText(newText) {
-      this.reference_text = newText.split('\n').map((line) => line.replace('\t', ''))
-      this.display_text = this.reference_text.map((line) => line.replace(/Æ/g, '\t'))
-      this.processed_typings = Array(this.reference_text.length).fill('')
+      this.referenceText = newText.split('\n').map((line) => line.replace('\t', ''))
+
+      // Process the reference text for display, while replacing (Æ) with a tab character
+      this.displayText = this.referenceText.map((line) => line.replace(/Æ/g, '\t'))
     },
 
-    processInput() {
-      this.$refs['play-field'].focus()
-      this.processed_typings = this.current_typings.split('\n')
+    startGame() {
+      this.startTime = Date.now()
+      this.gameStarted = true
+    },
 
-      // Check if the user has completed the typing test
-      if (this.reference_text.join('') === this.processed_typings.join('')) {
-        alert('You have completed the typing test!')
-        this.resetTyping();
-        this.$emit('getNewProblem');
-        return;
-      }
+    resetGame() {
+      this.currentTypings = ''
+      this.processedInput = ''
+
+      this.$nextTick(() => {
+        const playField = this.$refs['play-field']
+        playField.focus()
+        playField.setSelectionRange(0, 0)
+      })
     },
 
     checkInput(e) {
       if (e.key === 'Tab') {
+        this.currentTypings += 'Æ'
+
+        // Prevent the default tab behavior
         e.preventDefault()
-        this.current_typings += 'Æ'
-        this.processInput()
       }
 
       if (this.INPUT_CHARACTERS.includes(e.key) || e.key === 'Enter') {
+        // Handle Start Game Here
+        if (!this.start_game) this.startGame()
+
+        // Apply the key press to the current typings
         if (!this.$refs['play-field'].matches(':focus')) {
-          this.current_typings += e.key === 'Enter' ? '\n' : e.key
+          this.currentTypings += e.key === 'Enter' ? '\n' : e.key
+          this.$refs['play-field'].focus()
         }
-        this.processInput()
-        this.$refs['play-field'].focus()
       }
 
-      console.log(this.processed_typings, this.reference_text)
+      this.processInput()
     },
 
-    resetTyping() {
-      // Reset typing states
-      this.current_typings = '';
-      this.processed_typings = Array(this.reference_text.length).fill(''); // Ensure same length
-      this.$nextTick(() => {
-        const playField = this.$refs['play-field'];
-        playField.focus(); // Refocus textarea
-        playField.setSelectionRange(0, 0); // Set cursor to the beginning
-      });
+    processInput() {
+      this.processedInput = this.currentTypings.split('\n')
+
+      // Check if game is over
+      if (this.referenceText.join('') === this.processedInput.join('')) {
+        // const timeTaken = (Date.now() - this.startTime) / 1000 / 60
+        // const wpm = this.referenceText.join('').length / 5 / timeTaken
+
+        alert('You have completed the typing test!\n')
+
+        this.resetGame()
+        // this.$emit('getNewProblem')
+      }
     },
 
+    // Handle character color based on correctness
     getCharacterClass(row, column) {
-      const referenceChar = this.reference_text[row][column]
-      const typedLine = this.processed_typings[row] || ''
+      const referenceChar = this.referenceText[row][column]
+      const typedLine = this.processedInput[row] || ''
       const typedChar = typedLine[column]
 
       if (typedChar === undefined) {
@@ -83,53 +130,80 @@ export default {
   },
   mounted() {
     window.addEventListener('keydown', this.checkInput)
+    this.setupText(this.problem.problem)
+    this.resetGame()
     this.$refs['play-field'].focus()
-    this.setupText(this.text);
-  },
-  beforeDestroy() {
-    window.removeEventListener('keydown', this.checkInput)
   },
   watch: {
-    text(newValue) {
-      this.setupText(newValue);
+    problem(newProblem) {
+      this.setupText(newProblem.problem)
     }
   }
 }
 </script>
 
-<template>
-  <div class="typing-area container-muted">
-    <div class="pseudo-text-area">
-      <div v-for="(line, row) in display_text" :key="row">
-        <span v-for="(char, column) in line" :key="column" :class="getCharacterClass(row, column)">
-          <span v-if="char === '\t'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-          <span v-else>{{ char }}</span>
-        </span>
-      </div>
-      <textarea
-        class="hidden"
-        v-model="current_typings"
-        ref="play-field"
-        @input="processInput"
-      ></textarea>
-    </div>
+<style scoped>
+.breadcrumbs {
+  color: #8d8d8d;
+  font-size: 1rem;
 
-    <!-- <button @click="$emit('getNewProblem')"></button> -->
-  </div>
-</template>
+  border-bottom: 1px solid #444444;
 
-<style>
-.hidden {
-  opacity: 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+  p {
+    margin-left: 16px;
+  }
 }
 
-button {
-  margin-top: 128px;
+.typing-area {
+  border-radius: 8px;
+  position: relative;
+
+  user-select: none;
+
+  min-height: 400px;
+}
+
+.number-rule {
+  color: #8d8d8d;
+  font-size: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border-right: 1px solid #444444;
+
+  p {
+    margin-left: 24px;
+    margin-right: 8px;
+  }
+}
+
+.display-text {
+  margin-left: 8px;
+
+  display: block;
+}
+
+.pseudo-text-area {
+  pointer-events: none;
+
+  color: rgb(68, 68, 68);
+
+  display: flex;
+  flex-direction: row;
+}
+
+.correct {
+  color: #8d8d8d;
+}
+
+.incorrect {
+  color: #ff0000;
+}
+
+.hidden {
+  position: absolute;
+  opacity: 0;
 }
 </style>
