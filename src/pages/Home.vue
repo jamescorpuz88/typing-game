@@ -1,17 +1,19 @@
 <script>
 import Tabs from '@/components/Tabs.vue'
 import TypingArea from '@/components/TypingArea.vue'
+import Footer from '@/components/TypingFooter.vue'
 import { jsProblems } from '@/data/codingJsProblems'
 
 export default {
   name: 'Home',
   components: {
     Tabs,
-    TypingArea
+    TypingArea,
+    Footer
   },
   data() {
     return {
-      tabItems: ['typing.js', 'index.html', 'style.css'],
+      tabItems: ['typing.js', 'typing.java'],
       typingText: jsProblems[Math.floor(Math.random() * jsProblems.length)]
       // typingText: jsProblems[4]
     }
@@ -33,6 +35,7 @@ export default {
   <div class="type-field">
     <Tabs :tabs="tabItems" />
     <TypingArea :problem="typingText" @get-new-problem="randomizeProblem" />
+    <Footer :problem="typingText" />
   </div>
 </template>
 

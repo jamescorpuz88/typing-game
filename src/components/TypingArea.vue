@@ -16,7 +16,13 @@
             :key="column"
             :class="getCharacterClass(row, column)"
           >
-            <span v-if="char === '\t'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span v-if="char === '\t' && getCharacterClass(row, column) === 'incorrect'">{{
+              '___'
+            }}</span>
+            <span v-else-if="char === '\t'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span v-else-if="char === ' ' && getCharacterClass(row, column) === 'incorrect'">{{
+              '_'
+            }}</span>
             <span v-else>{{ char }}</span>
           </span>
         </div>
@@ -33,6 +39,8 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
   name: 'TypingArea',
   props: {
@@ -49,6 +57,12 @@ export default {
       startTime: 0,
       gameStarted: false
     }
+  },
+  setup() {
+    const correctCount = ref(0)
+    const incorrectCount = ref(0)
+
+    return { correctCount, incorrectCount }
   },
   methods: {
     setupText(newText) {
@@ -92,7 +106,12 @@ export default {
 
         // Apply the key press to the current typings
         if (!this.$refs['play-field'].matches(':focus')) {
-          this.currentTypings += e.key === 'Enter' ? '\n' : e.key
+          console.log('test')
+          if (e.key === 'Enter') {
+            this.currentTypings += '\n'
+          } else {
+            this.currentTypings += e.key
+          }
           this.$refs['play-field'].focus()
         }
       }
@@ -102,6 +121,14 @@ export default {
 
     processInput() {
       this.processedInput = this.currentTypings.split('\n')
+
+      // Remove trailing text past column index
+      this.processedInput = this.processedInput.map((line, index) => {
+        return line.slice(0, this.referenceText[index].length)
+      })
+
+      // Count correct and incorrect characters
+      this.trackCorrectness()
 
       // Check if game is over
       if (this.referenceText.join('') === this.processedInput.join('')) {
@@ -113,6 +140,25 @@ export default {
         this.resetGame()
         this.$emit('getNewProblem')
       }
+    },
+
+    trackCorrectness() {
+      const joinedInput = this.processedInput.join('')
+      const joinedReference = this.referenceText.join('')
+
+      var correctCount = 0
+      var incorrectCount = 0
+
+      joinedInput.split('').forEach((char, index) => {
+        if (char !== joinedReference[index]) {
+          incorrectCount++
+        } else {
+          correctCount++
+        }
+      })
+
+      this.correctCount = correctCount
+      this.incorrectCount = incorrectCount
     },
 
     // Handle character color based on correctness
@@ -159,7 +205,8 @@ export default {
 }
 
 .typing-area {
-  border-radius: 8px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   position: relative;
 
   user-select: none;
