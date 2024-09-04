@@ -60,12 +60,14 @@ export default {
 
     startGame() {
       this.startTime = Date.now()
+
       this.gameStarted = true
     },
 
     resetGame() {
       this.currentTypings = ''
       this.processedInput = ''
+      this.gameStarted = false
 
       this.$nextTick(() => {
         const playField = this.$refs['play-field']
@@ -84,7 +86,9 @@ export default {
 
       if (this.INPUT_CHARACTERS.includes(e.key) || e.key === 'Enter') {
         // Handle Start Game Here
-        if (!this.start_game) this.startGame()
+        if (!this.gameStarted) {
+          this.startGame()
+        }
 
         // Apply the key press to the current typings
         if (!this.$refs['play-field'].matches(':focus')) {
@@ -101,13 +105,13 @@ export default {
 
       // Check if game is over
       if (this.referenceText.join('') === this.processedInput.join('')) {
-        // const timeTaken = (Date.now() - this.startTime) / 1000 / 60
-        // const wpm = this.referenceText.join('').length / 5 / timeTaken
+        const timeTaken = (Date.now() - this.startTime) / 60000
+        const wpm = this.referenceText.join('').length / 5 / timeTaken
 
-        alert('You have completed the typing test!\n')
+        alert('You have completed the typing test!\n Your WPM is: ' + wpm.toFixed(2))
 
         this.resetGame()
-        // this.$emit('getNewProblem')
+        this.$emit('getNewProblem')
       }
     },
 
