@@ -1,0 +1,27 @@
+.type-field {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.typing-area {
+  border-radius: 8px;
+  position: relative;
+
+  padding: 32px;
+  user-select: none;
+
+  min-height: 300px;
+}
+
+.pseudo-text-area {
+  margin: 32px;
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  pointer-events: none;
+
+  pre code {
+    font-size: 1.25rem;
+    font-family: 'Courier New', Courier, monospace;
+  }
+}
