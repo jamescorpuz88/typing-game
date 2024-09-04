@@ -8,7 +8,8 @@ export default {
   },
   methods: {
     handleTabClick(index) {
-      alert(`You clicked on tab ${index} \nNot implemented yet`);
+      // alert(`You clicked on tab ${index} \nNot implemented yet`);
+      console.log(`You clicked on tab ${index} \nNot implemented yet`)
     }
   }
 }
@@ -16,7 +17,12 @@ export default {
 
 <template>
   <div class="tabs">
-    <div class="tab container" v-for="(tab, index) in tabs" :key="index" @click="handleTabClick(index)">
+    <div
+      class="tab container"
+      v-for="(tab, index) in tabs"
+      :key="index"
+      @click="handleTabClick(index)"
+    >
       <p>{{ tab }}</p>
     </div>
   </div>

@@ -144,7 +144,7 @@ export default {
 
 <style scoped>
 .breadcrumbs {
-  color: #8d8d8d;
+  color: var(--color-text);
   font-size: 1rem;
 
   border-bottom: 1px solid #444444;
@@ -164,8 +164,7 @@ export default {
 }
 
 .number-rule {
-  color: #8d8d8d;
-  font-size: 1rem;
+  color: var(--color-text);
 
   display: flex;
   flex-direction: column;
@@ -188,14 +187,14 @@ export default {
 .pseudo-text-area {
   pointer-events: none;
 
-  color: rgb(68, 68, 68);
+  color: var(--color-text-light);
 
   display: flex;
   flex-direction: row;
 }
 
 .correct {
-  color: #8d8d8d;
+  color: var(--color-text);
 }
 
 .incorrect {

@@ -13,12 +13,14 @@ export default {
     return {
       tabItems: ['typing.js', 'index.html', 'style.css'],
       typingText: jsProblems[Math.floor(Math.random() * jsProblems.length)]
+      // typingText: jsProblems[4]
     }
   },
   methods: {
     randomizeProblem() {
       const randomIndex = Math.floor(Math.random() * jsProblems.length)
       this.typingText = jsProblems[randomIndex]
+      // this.typingText = jsProblems[4]
     }
   },
   mounted() {
