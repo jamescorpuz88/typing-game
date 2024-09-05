@@ -5,11 +5,10 @@
     </div>
     <div class="terminal-text">
       <p>
-        <!-- PS C:\User\Documents\Repository\typing-game>{{ gameObject.gameState ? ' npm start' : '' }} -->
         PS C:\User\Documents\Repository\typing-game>
-        {{ gameObject.gameState || gameObject.startTime !== 0 ? ' npm start' : '' }}
+        {{ gameStat.isStarted || gameStat.startTime !== 0 ? ' npm start' : '' }}
       </p>
-      <div v-if="gameObject.startTime !== 0" style="margin-left: 16px">
+      <div v-if="gameStat.startTime !== 0" style="margin-left: 16px">
         <p>{{ `WPM: ${gameStat.wpm}` }}</p>
         <p>{{ `Accuracy: ${gameStat.accuracy}%` }}</p>
         <p>{{ `AWPM: ${gameStat.awpm}` }}</p>
@@ -25,46 +24,23 @@ import { ref } from 'vue'
 export default {
   name: 'Terminal',
   props: {
-    gameState: { type: Object, required: true }
+    propData: { type: Object, required: true }
   },
   setup(props) {
-    const gameObject = ref(props.gameState)
-    const gameStat = ref({
-      wpm: 0,
-      awpm: 0,
-      accuracy: 0,
-      time: 0
-    })
+    const gameStat = ref(props.propData)
 
     return {
-      gameObject,
       gameStat
     }
   },
   methods: {
-    processData() {
-      if (!this.gameObject.gameState) return
-
-      const wpm = Math.round(
-        this.gameObject.correct / 5 / ((Date.now() - this.gameObject.startTime) / 60000)
-      )
-      const accuracy = Math.round((this.gameObject.correct / this.gameObject.total) * 100)
-      const awpm = wpm * (accuracy / 100)
-      const time = (Date.now() - this.gameObject.startTime) / 1000
-
-      this.gameStat = {
-        wpm,
-        awpm,
-        accuracy,
-        time
-      }
+    updateGameStat(gameStat) {
+      this.gameStat = gameStat
     }
   },
   watch: {
-    gameState(newVal) {
-      this.gameObject = newVal
-
-      this.processData()
+    propData(newVal) {
+      this.updateGameStat(newVal)
     }
   }
 }

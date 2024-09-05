@@ -1,12 +1,11 @@
 <script setup>
-import Home from './pages/Home.vue'
+import TypingGame from './pages/TypingGame.vue'
 </script>
 
 <template>
   <main>
-    <Home />
+    <TypingGame />
   </main>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

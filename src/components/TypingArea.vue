@@ -32,6 +32,7 @@
         class="hidden"
         v-model="currentTypings"
         ref="play-field"
+        v-if="canType"
         @input="processInput"
       ></textarea>
     </div>
@@ -42,7 +43,8 @@
 export default {
   name: 'TypingArea',
   props: {
-    problem: { problem: Object, required: true }
+    problem: { problem: Object, required: true },
+    popupVisible: { type: Boolean, required: true }
   },
   data() {
     return {
@@ -64,7 +66,10 @@ export default {
         correct: 0,
         incorrect: 0,
         total: 0
-      }
+      },
+
+      // Other State
+      canType: true
     }
   },
   setup() {},
@@ -97,6 +102,8 @@ export default {
     },
 
     checkInput(e) {
+      if (this.popupVisible) return
+
       if (e.key === 'Tab') {
         this.currentTypings += 'Æ'
 
@@ -112,12 +119,12 @@ export default {
 
         // Apply the key press to the current typings
         if (!this.$refs['play-field'].matches(':focus')) {
-          console.log('test')
           if (e.key === 'Enter') {
             this.currentTypings += '\n'
-          } else {
-            this.currentTypings += e.key
           }
+          // } else {
+          //   this.currentTypings += e.key
+          // }
           this.$refs['play-field'].focus()
         }
       }
@@ -135,13 +142,8 @@ export default {
 
       // Check if game is over
       if (this.referenceText.join('') === this.processedInput.join('')) {
-        const timeTaken = (Date.now() - this.startTime) / 60000
-        const wpm = this.referenceText.join('').length / 5 / timeTaken
-
-        alert('You have completed the typing test!\n Your WPM is: ' + wpm.toFixed(2))
-
         this.resetGame()
-        this.$emit('getNewProblem')
+        this.$emit('gameFinish')
       }
 
       // Count correct and incorrect characters
@@ -174,7 +176,7 @@ export default {
       }
 
       this.gameState = newGameState
-      this.$emit('updateGameState', this.gameState)
+      this.$emit('updateGameData', this.gameState)
     },
 
     // Handle character color based on correctness
@@ -203,6 +205,9 @@ export default {
   watch: {
     problem(newProblem) {
       this.setupText(newProblem.problem)
+    },
+    popupVisible(newVisibility) {
+      this.canType = !newVisibility
     }
   }
 }
