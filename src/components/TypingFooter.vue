@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'Footer',
+  name: 'TypingFooter',
   props: {
     problem: { type: Object, required: true }
   },

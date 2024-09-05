@@ -39,8 +39,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-
 export default {
   name: 'TypingArea',
   props: {
@@ -51,19 +49,25 @@ export default {
       INPUT_CHARACTERS:
         'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|;\':",./<>? ',
       currentTypings: '',
-      processedInput: '',
+      processedInput: [], // Initialize as an empty array
       referenceText: '',
       displayText: '',
+
+      // Game State
       startTime: 0,
-      gameStarted: false
+      correctCount: 0,
+      incorrectCount: 0,
+      gameStarted: false,
+      gameState: {
+        gameState: false,
+        startTime: 0,
+        correct: 0,
+        incorrect: 0,
+        total: 0
+      }
     }
   },
-  setup() {
-    const correctCount = ref(0)
-    const incorrectCount = ref(0)
-
-    return { correctCount, incorrectCount }
-  },
+  setup() {},
   methods: {
     setupText(newText) {
       this.referenceText = newText.split('\n').map((line) => line.replace('\t', ''))
@@ -74,14 +78,16 @@ export default {
 
     startGame() {
       this.startTime = Date.now()
-
       this.gameStarted = true
+
+      this.$emit('gameStart', this.startTime)
     },
 
     resetGame() {
       this.currentTypings = ''
-      this.processedInput = ''
+      this.processedInput = []
       this.gameStarted = false
+      this.gameState.gameState = false
 
       this.$nextTick(() => {
         const playField = this.$refs['play-field']
@@ -127,9 +133,6 @@ export default {
         return line.slice(0, this.referenceText[index].length)
       })
 
-      // Count correct and incorrect characters
-      this.trackCorrectness()
-
       // Check if game is over
       if (this.referenceText.join('') === this.processedInput.join('')) {
         const timeTaken = (Date.now() - this.startTime) / 60000
@@ -140,6 +143,9 @@ export default {
         this.resetGame()
         this.$emit('getNewProblem')
       }
+
+      // Count correct and incorrect characters
+      this.trackCorrectness()
     },
 
     trackCorrectness() {
@@ -159,6 +165,16 @@ export default {
 
       this.correctCount = correctCount
       this.incorrectCount = incorrectCount
+
+      const newGameState = {
+        gameState: this.gameStarted,
+        correct: this.correctCount,
+        incorrect: this.incorrectCount,
+        total: this.processedInput.join('').length
+      }
+
+      this.gameState = newGameState
+      this.$emit('updateGameState', this.gameState)
     },
 
     // Handle character color based on correctness

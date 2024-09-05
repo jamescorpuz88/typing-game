@@ -94,3 +94,8 @@ body {
 .container-muted {
   background-color: var(--color-background-mute);
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
