@@ -89,8 +89,6 @@ export default {
 }
 
 .stat-row {
-  background-color: aqua;
-
   display: flex;
   flex: 1;
   justify-content: space-between;

@@ -35,7 +35,7 @@ export default {
       },
 
       // Popup
-      isPopupVisible: true
+      isPopupVisible: false
     }
   },
   methods: {
