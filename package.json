@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "deploy": "gh-pages -d dist"
+    "deploy": "git add dist -f && git commit -m `update_github_page` && git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {
     "vue": "^3.4.29"
@@ -20,7 +20,6 @@
     "@vue/eslint-config-prettier": "^9.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.23.0",
-    "gh-pages": "^6.1.1",
     "prettier": "^3.2.5",
     "vite": "^5.3.1"
   }
