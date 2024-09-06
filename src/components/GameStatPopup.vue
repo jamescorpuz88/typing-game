@@ -4,20 +4,22 @@
       <div class="backdrop" @click="$emit('closePopup')"></div>
       <div class="content container">
         <div class="stats">
-          <h2>{{ `WPM` }}</h2>
-          <h1>{{ `${gameData.wpm}` }}</h1>
+          <div class="wpm">
+            <h1>{{ gameData.wpm }}</h1>
+            <h2>WPM</h2>
+          </div>
           <div class="stat-row">
-            <div>
-              <h2>{{ `Accuracy` }}</h2>
-              <h1>{{ `${gameData.accuracy}` }}</h1>
+            <div class="stat">
+              <h1>{{ gameData.awpm }}</h1>
+              <h2>AWPM</h2>
             </div>
-            <div>
-              <h2>{{ `AWPM` }}</h2>
-              <h1>{{ `${gameData.awpm}` }}</h1>
+            <div class="stat">
+              <h1>{{ gameData.accuracy }}</h1>
+              <h2>Accuracy</h2>
             </div>
-            <div>
-              <h2>{{ `Time` }}</h2>
-              <h1>{{ `${gameData.time}s` }}</h1>
+            <div class="stat">
+              <h1>{{ gameData.time.toFixed(2) }}</h1>
+              <h2>s</h2>
             </div>
           </div>
         </div>
@@ -80,22 +82,61 @@ export default {
   align-items: center;
 
   padding: 32px;
+  border-radius: 8px;
 }
 
 .stats {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
 }
 
 .stat-row {
   display: flex;
   flex: 1;
   justify-content: space-between;
+  margin-top: 8px;
+
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+
+  justify-content: center;
+  align-items: center;
+
+  border: 2px solid #444444;
+  padding: 8px;
+  border-radius: 8px;
+
+  h2 {
+    margin-top: auto;
+    margin-bottom: 8px;
+  }
 }
 
 h1 {
   margin: 0;
   font-size: 48px;
+}
+
+.wpm {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+
+  border: 2px solid #444444;
+  border-radius: 8px;
+  padding: 8px;
+
+  justify-content: center;
+
+  h2 {
+    margin-top: auto;
+    margin-bottom: 8px;
+  }
 }
 </style>

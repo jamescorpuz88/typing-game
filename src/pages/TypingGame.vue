@@ -1,3 +1,19 @@
+<template @input="checkInput">
+  <div class="type-field">
+    <Tabs :tabs="tabItems" />
+    <TypingArea
+      :problem="typingText"
+      :popup-visible="isPopupVisible"
+      @game-start="(time) => (startTime = time)"
+      @game-finish="gameFinish"
+      @update-game-data="updateData"
+    />
+    <Terminal :prop-data="gameStat" />
+    <TypingFooter :problem="typingText" />
+    <GameStatPopup :is-visible="isPopupVisible" :game-data="gameStat" @closePopup="closePopup" />
+  </div>
+</template>
+
 <script>
 import Tabs from '@/components/Tabs.vue'
 import TypingArea from '@/components/TypingArea.vue'
@@ -5,7 +21,6 @@ import Terminal from '@/components/Terminal.vue'
 import TypingFooter from '@/components/TypingFooter.vue'
 import GameStatPopup from '@/components/GameStatPopup.vue'
 import { jsProblems } from '@/data/codingJsProblems'
-import { handleError } from 'vue'
 
 export default {
   name: 'TypingGame',
@@ -95,21 +110,5 @@ export default {
   }
 }
 </script>
-
-<template @input="checkInput">
-  <div class="type-field">
-    <Tabs :tabs="tabItems" />
-    <TypingArea
-      :problem="typingText"
-      :popup-visible="isPopupVisible"
-      @game-start="(time) => (startTime = time)"
-      @game-finish="gameFinish"
-      @update-game-data="updateData"
-    />
-    <Terminal :prop-data="gameStat" />
-    <TypingFooter :problem="typingText" />
-    <GameStatPopup :is-visible="isPopupVisible" :game-data="gameStat" @closePopup="closePopup" />
-  </div>
-</template>
 
 <style scoped></style>

@@ -122,9 +122,6 @@ export default {
           if (e.key === 'Enter') {
             this.currentTypings += '\n'
           }
-          // } else {
-          //   this.currentTypings += e.key
-          // }
           this.$refs['play-field'].focus()
         }
       }
