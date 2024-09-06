@@ -17,3 +17,9 @@ npm install
 ```sh
 npm run dev
 ```
+
+## Project Deployment (Github Pages)
+
+```sh
+npm run build
+```
