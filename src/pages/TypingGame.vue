@@ -1,12 +1,14 @@
 <template @input="checkInput">
   <div class="type-field">
-    <Tabs :tabs="tabItems" />
+    <Tabs :tabs="tabs.map(tab => tab.tabName)" :selected-tab="selectedTab" @select-new-tab="onSelectNewTab"/>
     <TypingArea
       :problem="typingText"
       :popup-visible="isPopupVisible"
       @game-start="(time) => (startTime = time)"
       @game-finish="gameFinish"
       @update-game-data="updateData"
+
+      ref="typingArea"
     />
     <Terminal :prop-data="gameStat" />
     <TypingFooter :problem="typingText" />
@@ -20,7 +22,7 @@ import TypingArea from '@/components/TypingArea.vue'
 import Terminal from '@/components/Terminal.vue'
 import TypingFooter from '@/components/TypingFooter.vue'
 import GameStatPopup from '@/components/GameStatPopup.vue'
-import { jsProblems } from '@/data/codingJsProblems'
+import {tabItems} from '@/data/tabItems'
 
 export default {
   name: 'TypingGame',
@@ -33,9 +35,9 @@ export default {
   },
   data() {
     return {
-      tabItems: ['typing.js', 'typing.java'],
-      typingText: jsProblems[Math.floor(Math.random() * jsProblems.length)],
-      // typingText: jsProblems[4]
+      selectedTab: 0,
+      tabs: tabItems,
+      typingText: tabItems[0].typingProblems[0],
 
       // Game Data
       isStarted: false,
@@ -55,9 +57,9 @@ export default {
   },
   methods: {
     randomizeProblem() {
-      const randomIndex = Math.floor(Math.random() * jsProblems.length)
-      this.typingText = jsProblems[randomIndex]
-      // this.typingText = jsProblems[4]
+      var typingProblems = tabItems[this.selectedTab].typingProblems
+      const randomIndex = Math.floor(Math.random() * typingProblems.length)
+      this.typingText = tabItems[this.selectedTab].typingProblems[randomIndex]
     },
 
     updateData(data) {
@@ -97,12 +99,25 @@ export default {
       this.randomizeProblem()
     },
 
+    gameRestart() {
+      this.$refs.typingArea.resetGame()
+      this.gameStat.isStarted = false
+      this.gameStat.startTime = 0
+
+      this.randomizeProblem()
+    },
+
     openPopup() {
       this.isPopupVisible = true
     },
 
     closePopup() {
       this.isPopupVisible = false
+    },
+
+    onSelectNewTab(index) {
+      this.selectedTab = index
+      this.gameRestart()
     }
   },
   mounted() {
