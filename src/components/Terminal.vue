@@ -58,6 +58,10 @@ export default {
 
 .terminal-tabs {
   margin-left: 8px;
+  
+  span {
+    user-select: none;
+  }
 }
 
 .terminal-text {

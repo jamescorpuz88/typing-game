@@ -34,10 +34,10 @@ export default {
     <div class="tabs">
       <div v-for="(tab, index) in tabs" :key="index">
         <div v-if="selectedTab == index" class="tab selected container" @click="handleTabClick(index)">
-          {{ tab }}
+          <p>{{ tab }}</p>
         </div>
         <div v-else class="tab container" @click="handleTabClick(index)">
-          {{ tab }}
+          <p>{{ tab }}</p>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@ export default {
   cursor: pointer;
 
   p {
-    margin: 4px 16px;
+    user-select: none;
   }
 }
 

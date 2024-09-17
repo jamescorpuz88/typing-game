@@ -34,6 +34,7 @@
         ref="play-field"
         v-if="canType"
         @input="processInput"
+        @paste="preventPaste"
       ></textarea>
     </div>
   </div>
@@ -145,6 +146,10 @@ export default {
 
       // Count correct and incorrect characters
       this.trackCorrectness()
+    },
+
+    preventPaste(e) {
+      e.preventDefault()
     },
 
     trackCorrectness() {
