@@ -9,9 +9,15 @@ export default {
     problem: { type: Object, required: true }
   },
   data() {
-    const problemLength = this.problem.problem.split('\n').join('').length
+    let problemLength = this.problem.problem.split('\n').join('').length
+    
     return {
       problemLength
+    }
+  },
+  watch: {
+    problem(newProblem) {
+      this.problemLength = newProblem.problem.split('\n').join('').length
     }
   }
 }
